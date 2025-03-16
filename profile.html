@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dina Dandan</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+<style>
+  body {
+    background-color: #c3ceae; /* خلفية داكنة */
+    font-family: 'Tajawal', sans-serif;
+    padding: 0;
+    margin: 0;
+    color: #e0e0e0; /* لون النص داكن قليلاً بحيث يكون مريحًا */
+}
+
+/* ✅ تحسين الهيدر */
+.header {
+    background: #2C2C2C;
+    padding: 15px 30px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 15px;
+    margin: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); /* ظل أقوى */
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 5px 15px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.logo img {
+    height: 60px; /* تكبير الارتفاع قليلاً */
+    width: auto; /* الحفاظ على التناسب الأصلي للصورة */
+    max-width: 150px; /* حد أقصى للعرض */
+    border-radius: 12px; /* زاوية مستديرة أكثر لتناسق أفضل */
+    background: linear-gradient(145deg, #1e1e1e, #444444); /* تدرج داكن مشابه للهيدر */
+    box-shadow: 
+        3px 3px 6px rgba(0, 0, 0, 0.5), /* ظل خارجي داكن */
+        inset -2px -2px 4px rgba(0, 0, 0, 0.2), /* ظل داخلي داكن */
+        inset 2px 2px 4px rgba(255, 255, 255, 0.2); /* إضاءة داخلية فاتحة */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.logo img:hover {
+    transform: scale(1.08); /* تكبير طفيف عند التمرير */
+    box-shadow: 
+        6px 6px 12px rgba(0, 0, 0, 0.7), /* تكبير الظل */
+        inset -3px -3px 5px rgba(0, 0, 0, 0.25),
+        inset 3px 3px 5px rgba(255, 255, 255, 0.25);
+}
+
+.profile-card {
+    background: #fdfdfd; /* خلفية داكنة للبطاقة */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 350px;
+    margin: auto;
+    margin-top: 30px;
+}
+
+.profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid #575353;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.profile-img:hover {
+    transform: scale(1.05);
+}
+
+.profile-name {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 15px;
+    color: #575353; /* جعل الاسم أبيض لتباين أفضل */
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+
+.stat {
+    font-size: 18px;
+    font-weight: bold;
+    color: #a0c460; /* إضاءة بنفسجية لتمييز الإحصائيات */
+}
+
+.btn-primary {
+    background-color: #4731f6;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-top: 15px;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #2a1db1; /* لون أغمق عند التمرير */
+}
+
+
+    /* تحسين مظهر الأزرار */
+.btn {
+    border-radius: 8px;  /* تدوير الحواف */
+    transition: all 0.3s ease-in-out; /* تأثير الحركة عند التفاعل */
+}
+
+/* تأثير عند تمرير الماوس */
+.btn:hover {
+    transform: scale(1.05);
+}
+
+/* تأثير زر التحديث */
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* تأثير زر الحذف */
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #a71d2a;
+}
+
+
+
+/* تأكد من أن الـ loader في وسط الصفحة */
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* لجعلها في المنتصف تمامًا */
+  background: rgba(0, 0, 0, 0.7); /* لون داكن شفاف */
+  padding: 20px;
+  border-radius: 50%; /* يجعل الخلفية دائرية حول اللودر */
+  z-index: 9999;
+}
+
+.loader {
+  width: 60px;
+  height: 60px;
+  border: 6px solid transparent;
+  border-top: 6px solid #00ffcc;
+  border-radius: 50%;
+  animation: spin 1s linear infinite, glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 10px #00ffcc; }
+  100% { box-shadow: 0 0 30px #00ffcc; }
+}
+
+
+
+@media (max-width: 768px) { /* عند عرض الشاشة أقل من 768px */
+    .loader-container {
+        padding: 15px; /* تقليل المساحة حول اللودر */
+    }
+    .loader {
+        width: 50px; /* تقليل حجم اللودر */
+        height: 50px;
+        border-width: 5px;
+    }
+}
+
+</style>
+<body>
+    <div class="loader-container">
+        <div class="loader"></div>
+      </div>
+    <!-- ✅ الهيدر -->
+    <header class="header d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <div class="logo d-flex align-items-center">
+                <img src="./logo.png" alt="Logo" class="img-fluid" style="height: 60px; border-radius: 12px;">
+            </div>
+            <nav class="nav-links d-flex gap-1 ms-3">
+                <a href="./home.html">Home</a>
+                <a href="#" id="profileLink" onclick="goToProfile()">Profile</a>
+
+            </nav>
+        </div>
+        <div class="user-info d-flex align-items-center">
+            <div id="info-header" class="user-info d-flex align-items-center p-2"></div>
+            <button onclick="logoutBtn()" id="logout" class="btn btn-outline-danger" style="width: 80px; font-size: 14px;">Logout</button>
+        </div>
+    </header>
+
+    <!-- ✅ بطاقة البروفايل -->
+    <div id = "profileInfo" class="card profile-card text-center p-4 shadow-lg box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); background-color: #F5F5F5">
+   
+    
+    </div>
+
+    <!-- ✅ منطقة المحتوى -->
+    <div class="container mt-5" id="userPosts">
+  
+
+    </div>
+
+    <!-- ✅ رسالة التنبيه -->
+    <div id="liveAlertPlaceholder"></div>
+</body>
+</html>
+
+
+
+<script>
+
+const urlParams = new URLSearchParams(window.location.search);
+const id =urlParams.get("id");
+
+
+
+  // إخفاء الـ loader بعد 3 ثواني (مثال فقط على مدة التحميل)
+  window.onload = function() {
+  setTimeout(function() {
+    document.querySelector('.loader-container').style.display = 'none';
+  }, 500); // سيختفي الـ loader بعد 3 ثواني
+}
+
+// get profile info
+function showProfileInfo(){
+   
+ axios.get(`https://tarmeezacademy.com/api/v1/users/${id}`)
+  .then(function (response) {
+   
+ 
+    let post = response.data.data
+
+ 
+    
+    let content = `
+              <img src="${post.profile_image}" alt="" class="profile-img mx-auto mb-3">
+        <h3 class="profile-name">${post.name}</h3>
+   
+        <div class="row mt-3">
+            <div class="col">
+                <h4 class="stat">${post.posts_count}</h4>
+                <p class="text-muted">Posts</p>
+            </div>
+            <div class="col">
+                <h4 class="stat">${post.comments_count}</h4>
+                <p class="text-muted">Comments</p>
+            </div>
+          
+        </div>
+            `
+            document.getElementById("profileInfo").innerHTML = content
+
+  })
+  .catch(function (error) {
+    // handle error
+    console.log(error);
+  })
+    
+}
+showProfileInfo()
+
+
+
+function showUserPosts() {
+  axios.get(`https://tarmeezacademy.com/api/v1/users/${id}/posts`)
+    .then(function (response) {
+      
+      let posts = response.data.data;
+    
+
+      document.getElementById("userPosts").innerHTML = ""; // تفريغ المحتوى قبل الإضافة
+
+      for (let i = 0; i < posts.length; i++) {
+
+        let content = `<div class="card post-card mb-4" style="border-radius: 15px; width: 50%; margin: auto; box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); background-color: #F5F5F5; transition: all 0.3s ease;">
+    <div class="user-info d-flex align-items-center p-3 justify-content-between">
+        <div class="d-flex align-items-center">
+            <img src="${posts[i].author.profile_image}" alt="User Image" class="rounded-circle border border-2" style="width: 50px; height: 50px;">
+            <span class="card-title ms-2" style="font-weight: bold; color: #202731;">${posts[i].author.name}</span>
+        </div>
+    </div>
+    <div class="image-wrapper post-content" style="padding-left: 20px; padding-right: 20px; margin-bottom: 10px; cursor: pointer;" data-id="${posts[i].id}">
+        <img src="${posts[i].image}" class="post-img" alt="Post Image" style="width: 100%; border-radius: 10px;">
+        <h6 style="font-size: 10px; color: #999a96; margin-top: 2px; margin-left: 4px;">${posts[i].created_at}</h6>
+    </div>
+    <div class="card-body post-content" style="text-align: left; direction: ltr; cursor: pointer;" data-id="${posts[i].id}">
+        <h5 style="color: #202731;">${posts[i].title}</h5>
+        <p class="card-text" style="color: #202731;">${posts[i].body}</p>
+        <hr style="border-color: #444;"/>
+        <div style="display: flex; align-items: center; color: #888;">
+            <i class="fa fa-pencil" style="color: #888;"></i>
+            <span style="margin-left: 5px;">(${posts[i].comments_count}) Comments</span>
+        </div>
+    </div>
+</div>
+
+`;
+
+        document.getElementById("userPosts").innerHTML += content;
+      }
+
+
+      // ربط أي جزء من المنشور (الصورة أو النص) للانتقال إلى التعليقات
+      document.querySelectorAll(".post-content").forEach(element => {
+        element.addEventListener("click", function() {
+          let postId = this.getAttribute("data-id");
+          window.location.href = `./comments.html?id=${postId}`;
+        });
+      });
+
+   
+
+    })
+    .catch(function (error) {  
+      let err = error.response ? error.response.data.message : "An error occurred";
+      showAlert(err, 'danger');
+    });
+}
+
+showUserPosts();
+
+
+
+function goToProfile(){
+    let user = JSON.parse(localStorage.getItem("user"));
+
+
+            window.location.href = `profile.html?id=${user.id}`;
+   
+}
+
+
+
+
+  // setup UI
+  function hideBtns() {
+    
+    let logoutBtn = document.getElementById("logout");
+    let token = localStorage.getItem("name");
+
+    if (token == null) {
+        logoutBtn.style.display = "none";
+        
+    } else {
+    
+        logoutBtn.style.display = "inline-block";
+        
+       
+       let user =  setHeader()
+       let content = `
+            <span class="card-title ms-2" style="font-weight: bold; color: white; front-size : 14px">${user.name}</span>
+            <img src="${user.profile_image}" alt="User Image" class="rounded-circle border border-2" style="width: 50px; height: 50px;">
+            `
+            document.getElementById("info-header").innerHTML = content
+          
+       
+        
+    }
+   
+}
+hideBtns()
+
+
+
+
+
+  // local storage 
+
+  function setHeader() {
+    let user = null;
+    let storageUser = localStorage.getItem("user");
+
+    if (storageUser != null) {
+        user = JSON.parse(storageUser);
+      
+       
+    }
+    return user
+}
+   
+
+// alert login/logout/register msgs
+function showAlert(msg,level){
+    const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+const appendAlert = (message, type) => {
+  const wrapper = document.createElement('div')
+  wrapper.innerHTML = [
+    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+    `   <div>${message}</div>`,
+    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+    '</div>'
+  ].join('')
+
+
+  alertPlaceholder.append(wrapper)
+  setTimeout(() => {
+    wrapper.remove();
+        }, 3000);
+    
+
+}
+    appendAlert(msg, level)
+
+}
+// logout button
+function logoutBtn(){
+    let removeName =  localStorage.removeItem("name");
+     let removeUser = localStorage.removeItem("user");
+     
+     window.location.href = './home.html';
+     
+ }
+
+
+    function prevent () {
+        if (!localStorage.getItem('name')) {
+   
+            window.location.href = './home.html'; 
+
+        }
+    }
+    prevent ()
+
+
+
+
+
+
+
+
+</script>
+</html>
