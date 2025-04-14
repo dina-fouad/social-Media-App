@@ -511,12 +511,15 @@ document.addEventListener("DOMContentLoaded", function() {
  
 
 function registerBtn(){
- 
+ let test = "@"
     let img =  document.getElementById("image").files[0]
    let userName = document.getElementById("userNameRegister").value
    let password = document.getElementById("passwordRegister").value
    let name = document.getElementById("nameRegister").value
+ name = test + name
+ console.log(name)
 
+ 
 
     const formData= new FormData();
     formData.append("profile_image", img);
@@ -534,10 +537,12 @@ function registerBtn(){
                        
             let token = response.data.token;
             localStorage.setItem("name", token);
-            localStorage.setItem("user", JSON.stringify(response.data.user));
+           localStorage.setItem("user", JSON.stringify(response.data.user));
+         
 
         let modal = document.getElementById("exampleModalRegister");
         let modalInstance = bootstrap.Modal.getInstance(modal);
+
         modalInstance.hide();
         showAlert('Nice, You have successfully registered!', 'success'); 
         // setHeader()
@@ -642,19 +647,20 @@ axios.get('https://api.aladhan.com/v1/timingsByCity?country=jo&city=amman')
 
   // show posts
   function showPosts(page = 1){
-
+ 
     axios.get(`https://tarmeezacademy.com/api/v1/posts?page=${page}&limit=3`)
           
   .then(function (response) {
-    
+   
     let posts = response.data.data
    last_page = response.data.meta.last_page
+   console.log()
 
- 
+    
     for(let i = 0 ; i < posts.length ; i++ ){
       let id= response.data.data[i].id
       
-
+      if(response.data.data[i].author.name[0] === "@"){
       
     let content = `<div style="cursor: pointer; border-radius: 15px; transition: 0.3s; box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); background-color: #F5F5F5;" id="comments" onclick="window.location.href='./comments.html?id=${id}';" class="card post-card mb-4">
     
@@ -692,6 +698,7 @@ axios.get('https://api.aladhan.com/v1/timingsByCity?country=jo&city=amman')
     document.getElementById("posts").innerHTML += content
    
             }
+          }
   })
   .catch(function (error) {
     // handle error
